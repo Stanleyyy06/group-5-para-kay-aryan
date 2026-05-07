@@ -80,7 +80,7 @@ class CameraStream:
             self.cap.release()
 
 
-camera_stream = CameraStream(0)
+camera_stream = CameraStream(None)
 
 
 def generate_frames():
