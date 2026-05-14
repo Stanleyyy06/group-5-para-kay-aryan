@@ -20,7 +20,12 @@
         }
 
         h1 {
+            margin-bottom: 10px;
+        }
+
+        .user {
             margin-bottom: 20px;
+            color: #ccc;
         }
 
         video {
@@ -36,8 +41,11 @@
             font-size: 18px;
         }
 
-        button {
+        .buttons {
             margin-top: 20px;
+        }
+
+        button {
             padding: 12px 20px;
             border: none;
             border-radius: 8px;
@@ -45,6 +53,7 @@
             color: white;
             cursor: pointer;
             font-size: 16px;
+            margin: 0 10px;
         }
 
         button:hover {
@@ -58,15 +67,26 @@
 
     <h1>Live Device Camera</h1>
 
+    <div class="user">
+        Logged in as:
+        <strong>{{ username }}</strong>
+    </div>
+
     <video id="video" autoplay playsinline></video>
 
     <div class="status" id="status">
         Waiting for camera access...
     </div>
 
-    <button onclick="startCamera()">
-        Start Camera
-    </button>
+    <div class="buttons">
+        <button onclick="startCamera()">
+            Start Camera
+        </button>
+
+        <button onclick="window.location.href='{{ url_for('auth.logout') }}'">
+            Logout
+        </button>
+    </div>
 
 </div>
 
