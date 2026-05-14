@@ -9,5 +9,4 @@ __pycache__
 .git
 .gitignore
 Dockerfile
-Procfile
 users.db
