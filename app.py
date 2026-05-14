@@ -75,39 +75,23 @@ class CameraStream:
     def start(self):
         if not CV2_AVAILABLE:
             return False
-
-    if not self.running:
-        self.cap = cv2.VideoCapture(self.camera_url)
-
-        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-
-        if not self.cap.isOpened():
-            self.cap = None
-            return False
-
-        self.running = True
-        threading.Thread(target=self._read_frames, daemon=True).start()
-
-    return True
+        if not self.running:
+            self.cap = cv2.VideoCapture(self.camera_url)
+            if not self.cap.isOpened():
+                self.cap = None
+                return False
+            self.running = True
+            threading.Thread(target=self._read_frames, daemon=True).start()
+        return True
 
     def _read_frames(self):
-    while self.running:
-        ret, frame = self.cap.read()
+        while self.running:
+            ret, frame = self.cap.read()
+            if not ret:
+                break
+            with self.lock:
+                self.frame = frame
 
-        if not ret:
-            time.sleep(1)
-
-            if self.cap:
-                self.cap.release()
-
-            self.cap = cv2.VideoCapture(self.camera_url)
-            continue
-
-        with self.lock:
-            self.frame = frame
-            
     def get_frame(self):
         with self.lock:
             if self.frame is None or self.cap is None:
