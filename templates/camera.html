@@ -1,48 +1,99 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>IP Camera Stream</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Camera</title>
+
     <style>
-      body {font-family: Arial, sans-serif; background:#f4f4f9; margin:0; padding:0;}
-      .container {max-width:900px; margin:40px auto; padding:32px; background:white; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,0.08);}
-      h1 {margin-top:0; color:#333;}
-      .user-info {margin-bottom:20px; font-size:14px; color:#666;}
-      .stream-container {background:#000; border-radius:8px; overflow:hidden; margin:20px 0;}
-      img {width:100%; height:auto; display:block;}
-      .controls {margin-top:20px; display:flex; gap:12px;}
-      button {padding:12px 20px; border:none; border-radius:6px; background:#4f46e5; color:white; cursor:pointer; font-size:14px; transition:background 0.3s;}
-      button:hover {background:#4338ca;}
-      .status {padding:12px; background:#e0f2fe; color:#0c4a6e; border-radius:6px; margin-top:20px; text-align:center;}
+        body {
+            margin: 0;
+            padding: 0;
+            background: #111;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        video {
+            width: 85%;
+            max-width: 900px;
+            border-radius: 12px;
+            border: 4px solid white;
+            background: black;
+        }
+
+        .status {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #4f46e5;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #4338ca;
+        }
     </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>IP Camera Stream</h1>
-      <div class="user-info">Logged in as: <strong>{{ username }}</strong></div>
-      
-      <div class="stream-container">
-        {% if camera_available %}
-        <img src="{{ url_for('video_feed') }}" alt="IP Camera Stream">
-        {% else %}
-        <div style="padding:40px; color:#fff; text-align:center;">Camera unavailable on this host.</div>
-        {% endif %}
-      </div>
+</head>
+<body>
 
-      <div class="status">
-        {% if camera_available %}
-        <p>Camera Status: <strong>Live</strong></p>
-        {% else %}
-        <p>Camera Status: <strong>Unavailable</strong></p>
-        <p style="margin-top:10px; font-size:14px; color:#333;">Note: Railway containers cannot access a local webcam. To use an external stream, set the <code>CAMERA_URL</code> environment variable in Railway to your IP/HTTP camera source.</p>
-        {% endif %}
-        <p>Stream URL: <code>{{ camera_env }}</code></p>
-      </div>
+<div class="container">
 
-      <div class="controls">
-        <button onclick="location.reload()">Refresh Stream</button>
-        <button onclick="location.href='{{ url_for('auth.logout') }}'">Logout</button>
-      </div>
+    <h1>Live Device Camera</h1>
+
+    <video id="video" autoplay playsinline></video>
+
+    <div class="status" id="status">
+        Waiting for camera access...
     </div>
-  </body>
+
+    <button onclick="startCamera()">
+        Start Camera
+    </button>
+
+</div>
+
+<script>
+    async function startCamera() {
+        const status = document.getElementById("status");
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: false
+            });
+
+            document.getElementById("video").srcObject = stream;
+
+            status.innerHTML = "Camera Status: LIVE";
+
+        } catch (error) {
+            console.error(error);
+
+            status.innerHTML =
+                "Camera access denied or unavailable.";
+        }
+    }
+
+    startCamera();
+</script>
+
+</body>
 </html>
